@@ -72,23 +72,22 @@ class Platform(object):
         clr = Colors()
 
         if self.execpltf:
-            if sys.platform == "linux" or sys.platform == "linux2":
+            if sys.platform in ["linux", "linux2"]:
                 cfg.DARKDUMP_OS_UNIX_LINUX = True
                 print(clr.BOLD + clr.W + "Operating System: " + clr.G + sys.platform + clr.END)
-            if sys.platform == "win64" or sys.platform == "win32":
+            if sys.platform in ["win64", "win32"]:
                 cfg.DARKDUMP_OS_WIN32_64 = True
                 print(clr.BOLD + clr.W + "Operating System: " + clr.G + sys.platform + clr.END)
             if sys.platform == "darwin":
                 cfg.DARKDUMP_OS_DARWIN = True
                 print(clr.BOLD + clr.W + "Operating System: " + clr.G + sys.platform + clr.END)
-        else: pass
 
     def clean_screen(self):
         if self.execpltf:
-            if sys.platform == "linux" or sys.platform == "linux2" or sys.platform == "darwin":
+            if sys.platform in ["linux", "linux2", "darwin"]:
                 os.system('clear')
-            else: os.system('cls')
-        else: pass
+            else:
+                os.system('cls')
 
 class Darkdump(object):
     def __init__(self, api, query):
@@ -110,10 +109,10 @@ class Darkdump(object):
 
         try:
             if json_data["total"] >= cfg.DARKDUMP_MIN_DATA_RETRIEVE_LENGTH: # data >= 1
-                for key in range(0, 18):             
+                for key in range(18):             
                     site_title = json_data['data'][key]['title']
                     site_onion_link = json_data['data'][key]['link']
-                    print(clr.BOLD + clr.G + f"[+] Site Title: {site_title}\n\t> Onion Link: {clr.R}{site_onion_link}\n" + clr.END)              
+                    print(clr.BOLD + clr.G + f"[+] Site Title: {site_title}\n\t> Onion Link: {clr.R}{site_onion_link}\n" + clr.END)
         except IndexError:
             print(clr.BOLD + clr.R + f"[-] No results found for query: {self.query}\n" + clr.END)
 
@@ -154,16 +153,15 @@ def darkdump_main():
                     'page': args.page
                     }
             print(clr.BOLD + clr.B + f"Searching For: {args.query} on page: {args.page}...\n" + clr.END)
-            Darkdump(cfg.__darkdump_api__, query).crawl_api()
-            cfg.DARKDUMP_RUNNING = True
         else:
             query = {
                 'query': args.query,
                 'page': 1
-                }           
+                }
             print(clr.BOLD + clr.B + f"Searching For: {args.query} on page: 1...\n" + clr.END)
-            Darkdump(cfg.__darkdump_api__, query).crawl_api()
-            cfg.DARKDUMP_RUNNING = True
+
+        Darkdump(cfg.__darkdump_api__, query).crawl_api()
+        cfg.DARKDUMP_RUNNING = True
 
 if __name__ == "__main__":
     darkdump_main()
